@@ -1,0 +1,3 @@
+[submodule "vulkan-renderer"]
+	path = vulkan-renderer
+	url = git@github.com:David-DiGioia/vulkan-renderer.git
