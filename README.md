@@ -8,7 +8,21 @@ Big Satellite Lab is a club at the University of Georgia where we aim to create 
 
 Note: some of the instructions for building the project are borrowed from https://vkguide.dev/docs/chapter-0/building_project/
 
-First, install the Vulkan SDK https://vulkan.lunarg.com/sdk/home. This will contain the development headers and libraries needed to create Vulkan applications. It is put in a global location which we will reference later with CMake.
+Start by cloning the project
+
+```
+git clone git@github.com:Big-Satellite-Lab/big-satellite-lab.git
+```
+
+Now cd to the root of the project and initialize the submodules
+
+```
+git submodule update --init --recursive
+```
+
+This will clone the Vulkan renderer into the project, which is a submodule from this repo: https://github.com/David-DiGioia/vulkan-renderer.
+
+Next, install the Vulkan SDK https://vulkan.lunarg.com/sdk/home. This will contain the development headers and libraries needed to create Vulkan applications. It is put in a global location which we will reference later with CMake.
 
 Now download CMake, as it’s the build system we are going to use. https://cmake.org/.
 
