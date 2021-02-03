@@ -1,11 +1,6 @@
-/build
-/bin
+/build/*
+/bin/*
 
-# Ignore all assets. Download them from google drive instead
-/assets/*
-
-// Except the info file, so the assets folder remains on GitHub
-!/assets/info.txt
 
 # GitHub's default for C++ below ---------------------------------------------------
 

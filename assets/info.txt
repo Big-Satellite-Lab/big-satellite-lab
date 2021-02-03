@@ -1,3 +1,0 @@
-Download the assets separately from google drive then replace this folder with the one you download.
-
-The assets are large files, too large to track on GitHub.
