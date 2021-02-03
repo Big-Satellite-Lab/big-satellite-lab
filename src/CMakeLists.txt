@@ -1,7 +1,9 @@
 
 # Add source to this project's executable.
 add_executable (big_satellite_lab 
-"main.cpp"
+ "main.cpp"
+ "big_sat_lab.h"
+ "big_sat_lab.cpp"
  "../vulkan-renderer/src/vk_engine.cpp"
  "../vulkan-renderer/src/vk_engine.h" 
  "../vulkan-renderer/src/vk_types.h" 
@@ -14,6 +16,7 @@ add_executable (big_satellite_lab
  "../vulkan-renderer/src/render_to_texture.h"
  "../vulkan-renderer/src/render_to_texture.cpp"
  "../vulkan-renderer/tracy/TracyClient.cpp"
+ "../vulkan-renderer/src/application.h"
 )
 
 
