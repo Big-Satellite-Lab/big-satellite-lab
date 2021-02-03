@@ -6,8 +6,6 @@ Big Satellite Lab is a club at the University of Georgia where we aim to create 
 
 ## Building the project
 
-Note: some of the instructions for building the project are borrowed from https://vkguide.dev/docs/chapter-0/building_project/
-
 Start by cloning the project
 
 ```
@@ -50,7 +48,9 @@ If you get the message of SDL2 dll missing, go to your sdl folder, lib directory
 
 ![](assets/readme_pics/debug_bin.png?raw=true "debug_bin")
 
-Now you should be able to build and run the program, and should be greated by a 3D scene in space.
+Now you should be able to build and run the program, and should be greeted by a 3D scene in space.
+
+Note: some of the instructions for building the project are borrowed from https://vkguide.dev/docs/chapter-0/building_project/
 
 ## Project organization
 
