@@ -1,5 +1,7 @@
 # big-satellite-lab
 
+![](assets/readme_pics/logo_transparent.png?raw=true "logo")
+
 Big Satellite Lab is a club at the University of Georgia where we aim to create a real-time 3D simulation of our solar system as a sandbox for testing spacecrafts.
 
 ## Building the project
@@ -28,11 +30,11 @@ Press generate. If you open `big-satellite-lab/build` you will see the project f
 
 From Visual Studio, select the big-satellite-lab target, set as Startup Project, and you can now compile and execute it by just hitting F5 (start debugging).
 
-![](assets/readme_pics/startup.png?raw=true "cmake")
+![](assets/readme_pics/startup.png?raw=true "startup")
 
 If you get the message of SDL2 dll missing, go to your sdl folder, lib directory, and grab the dlls from there. Paste them on big-satellite-lab/bin/Debug/ folder (or Release) . The dll has to be in the same directory as vulkan_guide.exe.
 
-![](assets/readme_pics/debug_bin.png?raw=true "cmake")
+![](assets/readme_pics/debug_bin.png?raw=true "debug_bin")
 
 Now you should be able to build and run the program, and should be greated by a 3D scene in space.
 
@@ -222,11 +224,15 @@ void BigSatLab::gui()
 
 Right now the we're just displaying ImGui's demo window, which is one of the best resources for learning what everything does in ImGui. You can find its implementation in `imgui_demo.cpp` (in the imgui project).
 
+![](assets/readme_pics/imgui_demo.png?raw=true "imgui_demo")
+
 A fast way to learn ImGui is to just run the program with the demo window, and look through each of the gizmos it has to offer, and if you want to use that gizmo for your own window, look in the `imgui_demo.cpp` and find the relevant code and copy and paste it for your own use.
 
 ### The examples put together
 
 If you run the program with each of these implementations for `init`, `update`, `input`, and `gui` you will see the following:
+
+![](assets/readme_pics/demo.png?raw=true "demo")
 
 Earth oscillates up and down and we can move the camera around with WASD. If you press F, that will enable/disable looking around with the camera. Also notice the ImGui window which you can click to expand tabs of. We can associate variables from out program with these sliders/fields and then we can change their value from the gui.
 
