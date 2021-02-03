@@ -1,6 +1,7 @@
 /build/*
 /bin/*
 
+!/build/info.txt
 
 # GitHub's default for C++ below ---------------------------------------------------
 

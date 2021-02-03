@@ -1,0 +1,1 @@
+This folder is where cmake will build the files for your IDE (in my case, Visual Studio)
