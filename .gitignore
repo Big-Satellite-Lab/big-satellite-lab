@@ -1,12 +1,11 @@
 /build
 /bin
 
-# Ignore all HDRIs (files are too big)
-/assets/hdri/*.hdr
+# Ignore all assets. Download them from google drive instead
+/assets/*
 
-# Ignore all model files except the default folder
-/assets/models/*
-!/assets/models/_default
+// Except the info file, so the assets folder remains on GitHub
+!/assets/info.txt
 
 # GitHub's default for C++ below ---------------------------------------------------
 
