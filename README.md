@@ -12,6 +12,8 @@ Now download CMake, as it’s the build system we are going to use. https://cmak
 
 Once CMake is installed, open CMake-gui. In the "Where is the source code" path, navigate to the root of the project containing the CMakeLists.txt file. This will be the folder called `big-satellite-lab`. For the "Where to build the binaries" path, select the build folder `big-satellite-lab/build`.
 
+![](assets/readme_pics/cmake.png?raw=true "cmake")
+
 In the Vulkan drop down you may find that the variables need to be populated with the Vulkan loader, include, and glslc directories. This will be wherever you installed the Vulkan SDK.
 
 Now press configure. Select the IDE that you want to use (I use Visual Studio).
@@ -26,7 +28,11 @@ Press generate. If you open `big-satellite-lab/build` you will see the project f
 
 From Visual Studio, select the big-satellite-lab target, set as Startup Project, and you can now compile and execute it by just hitting F5 (start debugging).
 
+![](assets/readme_pics/startup.png?raw=true "cmake")
+
 If you get the message of SDL2 dll missing, go to your sdl folder, lib directory, and grab the dlls from there. Paste them on big-satellite-lab/bin/Debug/ folder (or Release) . The dll has to be in the same directory as vulkan_guide.exe.
+
+![](assets/readme_pics/debug_bin.png?raw=true "cmake")
 
 Now you should be able to build and run the program, and should be greated by a 3D scene in space.
 
