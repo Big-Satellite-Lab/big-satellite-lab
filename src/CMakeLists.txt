@@ -17,12 +17,15 @@ add_executable (big_satellite_lab
  "../vulkan-renderer/src/render_to_texture.cpp"
  "../vulkan-renderer/tracy/TracyClient.cpp"
  "../vulkan-renderer/src/application.h"
+ "${sdl2_DIR}"
 )
 
 
 set_property(TARGET big_satellite_lab PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:big_satellite_lab>")
 
 target_include_directories(big_satellite_lab PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+
+target_include_directories(big_satellite_lab PUBLIC "${sdl2_DIR}")
 
 target_link_libraries(big_satellite_lab  vkbootstrap vma glm tinyobjloader imgui stb_image)
 
