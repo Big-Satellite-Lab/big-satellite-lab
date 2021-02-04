@@ -105,7 +105,7 @@ _earth.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
 
 `GameObjects` are any 3D object in our scene. They consist of just a transform (position, rotation, scale) and a `RenderObject*` which is an object that `VulkanEngine` knows how to draw to the screen. Here, `_earth` is a `GameObject` and we are assigning a `RenderObject` to it so that it can be drawn to the screen, then we are setting its position and rotation.
 
-`_earth` is a member variable of BigSatLab, which we append with an underscore to make it easily distinguishable from local variables. Feel free to add member variables and functions as you need to in `big_sat_lab.h`.
+`_earth` is a member variable of `BigSatLab`, which we append with an underscore to make it easily distinguishable from local variables. Feel free to add member variables and functions as you need to in `big_sat_lab.h`.
 
 Note that the planet models are 1 : 1,000,000 their true size in meters. So if we were to scale `_earth` by a million, it would have its true size if we treat 1 unit as 1 meter.
 
