@@ -6,9 +6,21 @@ Big Satellite Lab is a club at the University of Georgia where we aim to create 
 
 ## Building the project
 
-Note: some of the instructions for building the project are borrowed from https://vkguide.dev/docs/chapter-0/building_project/
+Start by cloning the project
 
-First, install the Vulkan SDK https://vulkan.lunarg.com/sdk/home. This will contain the development headers and libraries needed to create Vulkan applications. It is put in a global location which we will reference later with CMake.
+```
+git clone git@github.com:Big-Satellite-Lab/big-satellite-lab.git
+```
+
+Now cd to the root of the project and initialize the submodules
+
+```
+git submodule update --init --recursive
+```
+
+This will clone the Vulkan renderer into the project, which is a submodule from this repo: https://github.com/David-DiGioia/vulkan-renderer.
+
+Next, install the Vulkan SDK https://vulkan.lunarg.com/sdk/home. This will contain the development headers and libraries needed to create Vulkan applications. It is put in a global location which we will reference later with CMake.
 
 Now download CMake, as it’s the build system we are going to use. https://cmake.org/.
 
@@ -36,7 +48,9 @@ If you get the message of SDL2 dll missing, go to your sdl folder, lib directory
 
 ![](assets/readme_pics/debug_bin.png?raw=true "debug_bin")
 
-Now you should be able to build and run the program, and should be greated by a 3D scene in space.
+Now you should be able to build and run the program, and should be greeted by a 3D scene in space.
+
+Note: some of the instructions for building the project are borrowed from https://vkguide.dev/docs/chapter-0/building_project/
 
 ## Project organization
 
@@ -91,7 +105,7 @@ _earth.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
 
 `GameObjects` are any 3D object in our scene. They consist of just a transform (position, rotation, scale) and a `RenderObject*` which is an object that `VulkanEngine` knows how to draw to the screen. Here, `_earth` is a `GameObject` and we are assigning a `RenderObject` to it so that it can be drawn to the screen, then we are setting its position and rotation.
 
-`_earth` is a member variable of BigSatLab, which we append with an underscore to make it easily distinguishable from local variables. Feel free to add member variables and functions as you need to in `big_sat_lab.h`.
+`_earth` is a member variable of `BigSatLab`, which we append with an underscore to make it easily distinguishable from local variables. Feel free to add member variables and functions as you need to in `big_sat_lab.h`.
 
 Note that the planet models are 1 : 1,000,000 their true size in meters. So if we were to scale `_earth` by a million, it would have its true size if we treat 1 unit as 1 meter.
 
