@@ -144,23 +144,28 @@ vec2 sampleSphericalMap(vec3 v)
     // then shift to get in range [0, 1]
     uv += 0.5;
 
-    uv = -uv;
-
-    return uv;
+    return 1.0 - uv;
 }
 
 void main()
 {
     vec2 uv = sampleSphericalMap(normalize(localPos));
 
-    vec3 diffuse = texture(diffuseTex, uv).rgb;
+    // Remove discontinuity in uv coordinate to avoid artifacts in mipmap
+    vec2 uvd = uv;
+    uvd.x -= 0.5;
+    uvd.x = abs(uvd.x);
+    uvd.x += 0.5;
+
+    vec3 diffuse = textureGrad(diffuseTex, uv, dFdxCoarse(uvd), dFdyCoarse(uvd)).rgb;
+
     // obtain normal from normal map in range [0,1]
-    vec3 normal = texture(normalTex, uv).rgb;
+    vec3 normal = textureGrad(normalTex, uv, dFdxCoarse(uvd), dFdyCoarse(uvd)).rgb;
     // transform normal vector to range [-1, 1]
     normal = normalize(normal * 2.0 - 1.0);
-    float roughness = texture(roughnessTex, uv).g * constants.roughness_multiplier.x;
-    float ao = texture(aoTex, uv).r;
-    float metallic = texture(metalTex, uv).b;
+    float roughness = textureGrad(roughnessTex, uv, dFdxCoarse(uvd), dFdyCoarse(uvd)).g * constants.roughness_multiplier.x;
+    float ao = textureGrad(aoTex, uv, dFdxCoarse(uvd), dFdyCoarse(uvd)).r;
+    float metallic = textureGrad(metalTex, uv, dFdxCoarse(uvd), dFdyCoarse(uvd)).b;
 
     // transform normal from tangent space to world space
     vec3 N = TBN * normal;
