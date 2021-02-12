@@ -32,4 +32,8 @@ private:
 
 	// objects
 	GameObject _earth{};
+	GameObject _moon{};
+
+	// test imgui float
+	float _testFloat{ 0.0f };
 };

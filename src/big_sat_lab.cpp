@@ -21,6 +21,10 @@ void BigSatLab::init(VulkanEngine& engine)
 	_earth.setPos(glm::vec3(-2.5, 0.0, 0.4));
 	_earth.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
 
+	_moon.setRenderObject(engine.create_render_object("moon"));
+	_moon.setPos(glm::vec3(-5.0, 0.0, 0.4));
+	_moon.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
+
 	Light light{};
 	light.color = glm::vec4{ 1.0, 0.8, 1.0, 100.0 }; // w component is intensity
 	light.position = glm::vec4{ 1.0, 8.0, 4.0, 0.0 }; // w component is ignored
@@ -42,6 +46,8 @@ void BigSatLab::update(VulkanEngine& engine, float delta)
 {
 	glm::vec3 pos{ _earth.getPos() };
 	pos.y = std::sinf(_time);
+	pos.z = std::cosf(_time);
+	pos *= _testFloat;
 	_earth.setPos(pos);
 
 	updateCamera(engine);
@@ -115,5 +121,6 @@ bool BigSatLab::input(float delta)
 // This is called once per frame to update GUI
 void BigSatLab::gui()
 {
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
+	ImGui::DragFloat("drag float", &_testFloat, 0.005f);
 }
