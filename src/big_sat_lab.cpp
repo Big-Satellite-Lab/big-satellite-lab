@@ -6,6 +6,7 @@
 #include "SDL.h"
 
 #include <cmath>
+#include <iostream>
 
 // This is called once at the start of the program
 void BigSatLab::init(VulkanEngine& engine)
@@ -13,21 +14,29 @@ void BigSatLab::init(VulkanEngine& engine)
 	// Whether or not mouse stays at center of window
 	SDL_SetRelativeMouseMode((SDL_bool)_camMouseControls);
 
+	engine.set_gravity(0.0f);
+
 	_camera.pos = glm::vec3{ 0.0, 7.0, 7.0 };
+
+	PxMaterial* physMat{ engine.create_physics_material(0.5, 0.5, 0.6) };
+	PxShape* earthShape{ engine.create_physics_shape(PxSphereGeometry{ 6.371f }, *physMat) };
+	PxShape* moonShape{ engine.create_physics_shape(PxSphereGeometry{ 1.7371f }, *physMat) };
 
 	// "earth" is the name of the model's folder in assets/models and also the name of a material in shaders/_load_materials.txt.
 	// If these names did not match, we could specify the materials name as a second argument to VulkanEngine::create_render_objects()
 	_earth.setRenderObject(engine.create_render_object("earth"));
-	_earth.setPos(glm::vec3(-2.5, 0.0, 0.4));
+	_earth.setPos(glm::vec3(-2.5, 7.0, 0.4));
 	_earth.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
+	engine.add_to_physics_engine_dynamic(&_earth, earthShape);
 
 	_moon.setRenderObject(engine.create_render_object("moon"));
-	_moon.setPos(glm::vec3(-5.0, 0.0, 0.4));
+	_moon.setPos(glm::vec3(-3.0, 15.0, 0.4));
 	_moon.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
+	engine.add_to_physics_engine_dynamic(&_moon, moonShape);
 
 	Light light{};
-	light.color = glm::vec4{ 1.0, 0.8, 1.0, 100.0 }; // w component is intensity
-	light.position = glm::vec4{ 1.0, 8.0, 4.0, 0.0 }; // w component is ignored
+	light.color = glm::vec4{ 1.0, 0.8, 1.0, 150.0 }; // w component is intensity
+	light.position = glm::vec4{ 8.0, 12.0, 4.0, 0.0 }; // w component is ignored
 	// Only lights in this vector will be rendered!
 	_lights.push_back(light);
 }
@@ -44,15 +53,21 @@ void BigSatLab::updateCamera(VulkanEngine& engine)
 // This is called once per frame
 void BigSatLab::update(VulkanEngine& engine, float delta)
 {
-	glm::vec3 pos{ _earth.getPos() };
-	pos.y = std::sinf(_time);
-	pos.z = std::cosf(_time);
-	pos *= _testFloat;
-	_earth.setPos(pos);
+	//glm::vec3 pos{ _earth.getPos() };
+	//pos.y = std::sinf(_time);
+	//pos.z = std::cosf(_time);
+	//pos *= _testFloat;
+	//_earth.setPos(pos);
 
 	updateCamera(engine);
 	engine.set_scene_lights(_lights);
 	_time += delta;
+}
+
+// This is called once at each physics step
+void BigSatLab::fixedUpdate(VulkanEngine& engine)
+{
+	_earth.addForce(glm::vec3{0.0, 1000.0 * _testFloat, 0.0});
 }
 
 // This is called once per frame to handle user input

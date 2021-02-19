@@ -10,6 +10,8 @@ public:
 
 	void update(VulkanEngine& engine, float delta) override;
 
+	void fixedUpdate(VulkanEngine& engine) override;
+
 	bool input(float delta) override;
 
 	void gui() override;
