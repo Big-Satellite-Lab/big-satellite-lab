@@ -31,7 +31,7 @@ void BigSatLab::init(VulkanEngine& engine)
 	_planets.push_back(_earth);
 
 	_moon.setRenderObject(engine.create_render_object("moon"));
-	_moon.setPos(glm::vec3(-3.0, 25.0, 0.4));
+	_moon.setPos(glm::vec3(25.0, 25.0, 0.4));
 	_moon.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
 	engine.add_to_physics_engine_dynamic(&_moon, moonShape);
 	_planets.push_back(_moon);
@@ -77,7 +77,7 @@ void BigSatLab::fixedUpdate(VulkanEngine& engine)
 				glm::vec3 diff{ _planets[j].getPos() - _planets[i].getPos() };
 				float r{ glm::length(diff) };
 				glm::vec3 direction{ glm::normalize(diff) };
-				float magnitude{ 1000.0f / (r * r) };
+				float magnitude{ 100000.0f / (r * r) };
 
 				glm::vec3 force{ direction * magnitude };
 				netForce += force;
@@ -88,7 +88,7 @@ void BigSatLab::fixedUpdate(VulkanEngine& engine)
 	}
 
 	//_earth.addForce(glm::vec3{0.0, 1000.0 * _testFloat, 0.0});
-	//_moon.addForce(glm::vec3{ 1000.0, 0.0, 0.0 });
+	_moon.addForce(glm::vec3{ 1000.0 * _testFloat, 0.0, 0.0 });
 }
 
 // This is called once per frame to handle user input
