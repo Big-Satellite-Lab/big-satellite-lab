@@ -34,9 +34,13 @@ private:
 
 	// objects
 	GameObject _earth{};
+	GameObject _sun{};
 	GameObject _moon{};
 	GameObject _mars{};
 	std::vector<GameObject> _planets;
+
+	// physics vars
+	float _G{ 6.674e-4f };
 
 	// test imgui float
 	float _testFloat{ 0.0f };
