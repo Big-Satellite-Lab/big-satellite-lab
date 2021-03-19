@@ -22,27 +22,34 @@ void BigSatLab::init(VulkanEngine& engine)
 	PxShape* earthShape{ engine.create_physics_shape(PxSphereGeometry{ 6.371f }, *physMat) };
 	PxShape* sunShape{ engine.create_physics_shape(PxSphereGeometry{ 696.34f }, *physMat) };
 	PxShape* moonShape{ engine.create_physics_shape(PxSphereGeometry{ 1.7371f }, *physMat) };
+	PxShape* satShape{ engine.create_physics_shape(PxCapsuleGeometry{1.0, 1.1}, *physMat) };
+
 
 	// "earth" is the name of the model's folder in assets/models and also the name of a material in shaders/_load_materials.txt.
 	// If these names did not match, we could specify the materials name as a second argument to VulkanEngine::create_render_objects()
 	_earth.setRenderObject(engine.create_render_object("earth"));
-	_earth.setPos(glm::vec3(-2.5, 7.0, 0.4));
+	_earth.setPos(glm::vec3(-2.5, 100.0, 0.4));
 	_earth.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
 	engine.add_to_physics_engine_dynamic_mass(&_earth, earthShape, 5.972e2f);
-	_planets.push_back(_earth);
+	_gravityObjects.push_back(_earth);
 
 	_sun.setRenderObject(engine.create_render_object("sun"));
 	_sun.setPos(glm::vec3(-2.5, 7.0, 800.0f));
 	_sun.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
 	engine.add_to_physics_engine_dynamic_mass(&_sun, sunShape, 1.989e8f);
-	_planets.push_back(_sun);
+	_gravityObjects.push_back(_sun);
 
 	_moon.setRenderObject(engine.create_render_object("moon"));
 	_moon.setPos(glm::vec3(25.0, 25.0, 0.4));
 	_moon.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
 	engine.add_to_physics_engine_dynamic_mass(&_moon, moonShape, 7.35e0f);
-	_moon.setVelocity(glm::vec3{ 2.0, 0.0, 0.0 });
-	_planets.push_back(_moon);
+	_gravityObjects.push_back(_moon);
+	_moon.setVelocity(glm::vec3{ 0.0, 0.0, 0.0 });
+
+	_sat01.setRenderObject(engine.create_render_object("sat01"));
+	_sat01.setPos(glm::vec3(0.0, 0.0, 0.0));
+	engine.add_to_physics_engine_dynamic_mass(&_sat01, satShape, 1.0f);
+	_gravityObjects.push_back(_sat01);
 
 	Light light{};
 	light.color = glm::vec4{ 1.0, 0.8, 1.0, 1.0e6 }; // w component is intensity
@@ -77,26 +84,27 @@ void BigSatLab::update(VulkanEngine& engine, float delta)
 // This is called once at each physics step
 void BigSatLab::fixedUpdate(VulkanEngine& engine)
 {
-	for (auto i{ 0 }; i < _planets.size(); ++i) {
+	for (auto i{ 0 }; i < _gravityObjects.size(); ++i) {
 		glm::vec3 netForce{ 0.0 };
 
-		for (auto j{ 0 }; j < _planets.size(); ++j) {
+		for (auto j{ 0 }; j < _gravityObjects.size(); ++j) {
 			if (j != i) {
-				glm::vec3 diff{ _planets[j].getPos() - _planets[i].getPos() };
+				glm::vec3 diff{ _gravityObjects[j].getPos() - _gravityObjects[i].getPos() };
 				float r{ glm::length(diff) };
 				glm::vec3 direction{ glm::normalize(diff) };
-				float magnitude{ (_G * _planets[i].getMass() * _planets[j].getMass()) / (r * r) };
+				float magnitude{ (_G * _gravityObjects[i].getMass() * _gravityObjects[j].getMass()) / (r * r) };
 
 				glm::vec3 force{ direction * magnitude };
 				netForce += force;
 			}
 		}
 
-		_planets[i].addForce(netForce);
+		_gravityObjects[i].addForce(netForce);
 	}
 
 	//_earth.addForce(glm::vec3{0.0, 1000.0 * _testFloat, 0.0});
-	_moon.addForce(glm::vec3{ 1000.0 * _testFloat, 0.0, 0.0 });
+	_sat01.addForce(_satForce);
+	_sat01.addTorque(_satTorque);
 }
 
 // This is called once per frame to handle user input
@@ -135,29 +143,59 @@ bool BigSatLab::input(float delta)
 		}
 	}
 
-	glm::vec4 translate{ 0.0f };
+	glm::vec4 camTranslate{ 0.0f };
 
 	// continuous-response keys
 	if (keystate[SDL_SCANCODE_W]) {
-		translate.z -= speed * delta;
+		camTranslate.z -= speed * delta;
 	}
 	if (keystate[SDL_SCANCODE_A]) {
-		translate.x -= speed * delta;
+		camTranslate.x -= speed * delta;
 	}
 	if (keystate[SDL_SCANCODE_S]) {
-		translate.z += speed * delta;
+		camTranslate.z += speed * delta;
 	}
 	if (keystate[SDL_SCANCODE_D]) {
-		translate.x += speed * delta;
+		camTranslate.x += speed * delta;
 	}
 	if (keystate[SDL_SCANCODE_E]) {
-		translate.y += speed * delta;
+		camTranslate.y += speed * delta;
 	}
 	if (keystate[SDL_SCANCODE_Q]) {
-		translate.y -= speed * delta;
+		camTranslate.y -= speed * delta;
 	}
 
-	_camera.pos += glm::vec3{ _camera.rot * translate };
+	_camera.pos += glm::vec3{ _camera.rot * camTranslate };
+
+	glm::vec4 satForce{ 0.0f };
+	glm::vec4 satTorque{ 0.0f };
+	float force{ 10.0f };
+	float torque{ 10.0f };
+
+	// torque:
+	// x: pitch
+	// y: yaw
+	// z: roll
+
+	// Control satellite
+	if (keystate[SDL_SCANCODE_LEFT]) {
+		satTorque.y += torque;
+	}
+	if (keystate[SDL_SCANCODE_RIGHT]) {
+		satTorque.y -= torque;
+	}
+	if (keystate[SDL_SCANCODE_UP]) {
+		satTorque.x += torque;
+	}
+	if (keystate[SDL_SCANCODE_DOWN]) {
+		satTorque.x -= torque;
+	}
+	if (keystate[SDL_SCANCODE_SPACE]) {
+		satForce.z += force;
+	}
+
+	_satForce = glm::vec3{ _sat01.getRot() * satForce };
+	_satTorque = glm::vec3{ _sat01.getRot() * satTorque };
 
 	return bQuit;
 }

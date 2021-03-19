@@ -37,7 +37,11 @@ private:
 	GameObject _sun{};
 	GameObject _moon{};
 	GameObject _mars{};
-	std::vector<GameObject> _planets;
+	std::vector<GameObject> _gravityObjects;
+
+	GameObject _sat01{};
+	glm::vec3 _satForce{};
+	glm::vec3 _satTorque{};
 
 	// physics vars
 	float _G{ 6.674e-4f };
