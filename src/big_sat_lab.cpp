@@ -16,7 +16,7 @@ void BigSatLab::init(VulkanEngine& engine)
 
 	engine.set_gravity(0.0f);
 
-	_camera.pos = glm::vec3{ 0.0, 7.0, 7.0 };
+	_camera.pos = glm::vec3{ 0.0, 0.0, 0.0 };
 
 	PxMaterial* physMat{ engine.create_physics_material(0.5, 0.5, 0.6) };
 	PxShape* earthShape{ engine.create_physics_shape(PxSphereGeometry{ 6.371f }, *physMat) };
@@ -42,12 +42,12 @@ void BigSatLab::init(VulkanEngine& engine)
 	_moon.setRenderObject(engine.create_render_object("moon"));
 	_moon.setPos(glm::vec3(25.0, 25.0, 0.4));
 	_moon.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
-	engine.add_to_physics_engine_dynamic_mass(&_moon, moonShape, 7.35e0f);
-	_gravityObjects.push_back(_moon);
-	_moon.setVelocity(glm::vec3{ 0.0, 0.0, 0.0 });
+	//engine.add_to_physics_engine_dynamic_mass(&_moon, moonShape, 7.35e0f);
+	//_gravityObjects.push_back(_moon);
+	//_moon.setVelocity(glm::vec3{ 0.0, 0.0, 0.0 });
 
 	_sat01.setRenderObject(engine.create_render_object("sat01"));
-	_sat01.setPos(glm::vec3(0.0, 0.0, 0.0));
+	_sat01.setPos(_camera.pos + glm::vec3(-10.0, 0.0, 0.0));
 	engine.add_to_physics_engine_dynamic_mass(&_sat01, satShape, 1.0f);
 	_gravityObjects.push_back(_sat01);
 
@@ -64,19 +64,42 @@ void BigSatLab::updateCamera(VulkanEngine& engine)
 	glm::mat4 rotTheta{ glm::rotate(_camRotTheta, glm::vec3{ 1.0f, 0.0f, 0.0f }) };
 	glm::mat4 rotPhi{ glm::rotate(_camRotPhi, glm::vec3{ 0.0f, 1.0f, 0.0f }) };
 	_camera.rot = rotPhi * rotTheta;
-	engine.set_camera_transform(_camera);
+}
+
+void BigSatLab::lookatSatellite(VulkanEngine& engine)
+{
+	float distance{ 10.0f };
+	glm::vec3 diff{ _sat01.getPos() - _earth.getPos() };
+	glm::vec3 n{ glm::normalize(diff) };
+	glm::vec3 camPos{ _sat01.getPos() + n * distance };
+
+	glm::vec3 u{ 0.0, 1.0, 1.0 };
+	u.x = -(u.y * n.y + u.z + n.z) / n.x;
+	u = glm::normalize(u);
+
+	// glm::lookAt returns the view matrix for both translation and rotation.
+	// So we zero out the translation portion of the matrix and inverse the remaining rotation portion
+	// since the camera's transform is the inverse of the view matrix
+	_camera.rot = glm::lookAt(_camera.pos, _moon.getPos(), glm::vec3{ 0.0, 1.0, 0.0 });
+	_camera.rot[3][0] = 0.0;
+	_camera.rot[3][1] = 0.0;
+	_camera.rot[3][2] = 0.0;
+	_camera.rot = glm::inverse(_camera.rot);
+	//_camera.pos = camPos;
+
+	//_moon.setPos(camPos);
+
+
 }
 
 // This is called once per frame
 void BigSatLab::update(VulkanEngine& engine, float delta)
 {
-	//glm::vec3 pos{ _earth.getPos() };
-	//pos.y = std::sinf(_time);
-	//pos.z = std::cosf(_time);
-	//pos *= _testFloat;
-	//_earth.setPos(pos);
+	_moon.setPos(glm::vec3{ _moonx, _moony, _moonz });
 
-	updateCamera(engine);
+	lookatSatellite(engine);
+	//updateCamera(engine);
+	engine.set_camera_transform(_camera);
 	engine.set_scene_lights(_lights);
 	_time += delta;
 }
@@ -204,5 +227,7 @@ bool BigSatLab::input(float delta)
 void BigSatLab::gui()
 {
 	//ImGui::ShowDemoWindow();
-	ImGui::DragFloat("drag float", &_testFloat, 0.005f);
+	ImGui::DragFloat("moon x", &_moonx, 0.005f);
+	ImGui::DragFloat("moon y", &_moony, 0.005f);
+	ImGui::DragFloat("moon z", &_moonz, 0.005f);
 }

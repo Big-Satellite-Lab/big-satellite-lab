@@ -19,6 +19,8 @@ public:
 	// New functions
 	void updateCamera(VulkanEngine& engine);
 
+	void lookatSatellite(VulkanEngine& engine);
+
 private:
 	// Camera variables
 	Transform _camera{};
@@ -46,6 +48,8 @@ private:
 	// physics vars
 	float _G{ 6.674e-4f };
 
-	// test imgui float
-	float _testFloat{ 0.0f };
+	//imgui vars
+	float _moonx{ 0.0f };
+	float _moony{ 0.0f };
+	float _moonz{ -8.0f };
 };
