@@ -34,7 +34,7 @@ void BigSatLab::init(VulkanEngine& engine)
 	_gravityObjects.push_back(_earth);
 
 	_sun.setRenderObject(engine.create_render_object("sun"));
-	_sun.setPos(glm::vec3(-2.5, 7.0, 800.0f));
+	_sun.setPos(glm::vec3(-2.5, 7.0, 1600.0f));
 	_sun.setRot(glm::rotate(glm::radians(110.0f), glm::vec3{ 0.0, 1.0, 0.0 }));
 	engine.add_to_physics_engine_dynamic_mass(&_sun, sunShape, 1.989e8f);
 	_gravityObjects.push_back(_sun);
@@ -52,7 +52,7 @@ void BigSatLab::init(VulkanEngine& engine)
 	_gravityObjects.push_back(_sat01);
 
 	Light light{};
-	light.color = glm::vec4{ 1.0, 0.8, 1.0, 1.0e6 }; // w component is intensity
+	light.color = glm::vec4{ 1.0, 0.8, 1.0, 1.0e7 }; // w component is intensity
 	light.position = glm::vec4{ _sun.getPos(), 0.0 }; // w component is ignored
 	// Only lights in this vector will be rendered!
 	_lights.push_back(light);
@@ -64,6 +64,16 @@ void BigSatLab::updateCamera(VulkanEngine& engine)
 	glm::mat4 rotTheta{ glm::rotate(_camRotTheta, glm::vec3{ 1.0f, 0.0f, 0.0f }) };
 	glm::mat4 rotPhi{ glm::rotate(_camRotPhi, glm::vec3{ 0.0f, 1.0f, 0.0f }) };
 	_camera.rot = rotPhi * rotTheta;
+}
+
+void BigSatLab::updateCameraOrbit(VulkanEngine& engine)
+{
+	// Translate the two angles into 4x4 matrices
+	glm::vec4 offset{ 0.0, 0.0, _camOrbitRadius, 0.0 };
+	glm::mat4 rotTheta{ glm::rotate(_camOrbitTheta, glm::vec3{ 1.0f, 0.0f, 0.0f }) };
+	glm::mat4 rotPhi{ glm::rotate(_camOrbitPhi, glm::vec3{ 0.0f, 1.0f, 0.0f }) };
+	offset = rotPhi * rotTheta * offset;
+	_camera.pos = _sat01.getPos() + (glm::vec3)offset;
 }
 
 void BigSatLab::lookatSatellite(VulkanEngine& engine)
@@ -80,7 +90,7 @@ void BigSatLab::lookatSatellite(VulkanEngine& engine)
 	// glm::lookAt returns the view matrix for both translation and rotation.
 	// So we zero out the translation portion of the matrix and inverse the remaining rotation portion
 	// since the camera's transform is the inverse of the view matrix
-	_camera.rot = glm::lookAt(_camera.pos, _moon.getPos(), glm::vec3{ 0.0, 1.0, 0.0 });
+	_camera.rot = glm::lookAt(_camera.pos, _sat01.getPos(), glm::vec3{ 0.0, 1.0, 0.0 });
 	_camera.rot[3][0] = 0.0;
 	_camera.rot[3][1] = 0.0;
 	_camera.rot[3][2] = 0.0;
@@ -97,8 +107,8 @@ void BigSatLab::update(VulkanEngine& engine, float delta)
 {
 	_moon.setPos(glm::vec3{ _moonx, _moony, _moonz });
 
+	updateCameraOrbit(engine);
 	lookatSatellite(engine);
-	//updateCamera(engine);
 	engine.set_camera_transform(_camera);
 	engine.set_scene_lights(_lights);
 	_time += delta;
@@ -155,10 +165,13 @@ bool BigSatLab::input(float delta)
 			break;
 		case SDL_MOUSEMOTION:
 			if (_camMouseControls) {
-				_camRotPhi -= e.motion.xrel * camSensitivity * mouseDelta;
-				_camRotTheta -= e.motion.yrel * camSensitivity * mouseDelta;
-				_camRotTheta = std::clamp(_camRotTheta, -pi / 2.0f, pi / 2.0f);
+				_camOrbitPhi -= e.motion.xrel * camSensitivity * mouseDelta;
+				_camOrbitTheta -= e.motion.yrel * camSensitivity * mouseDelta;
+				_camOrbitTheta = std::clamp(_camOrbitTheta, -pi / 2.0f, pi / 2.0f);
 			}
+			break;
+		case SDL_MOUSEWHEEL:
+			_camOrbitRadius -= e.wheel.y;
 			break;
 		case SDL_QUIT:
 			bQuit = true;
@@ -227,7 +240,7 @@ bool BigSatLab::input(float delta)
 void BigSatLab::gui()
 {
 	//ImGui::ShowDemoWindow();
-	ImGui::DragFloat("moon x", &_moonx, 0.005f);
-	ImGui::DragFloat("moon y", &_moony, 0.005f);
-	ImGui::DragFloat("moon z", &_moonz, 0.005f);
+	ImGui::DragFloat("cam phi", &_camOrbitPhi, 0.005f);
+	ImGui::DragFloat("cam theta", &_camOrbitTheta, 0.005f);
+	ImGui::DragFloat("cam radius", &_camOrbitRadius, 0.005f);
 }

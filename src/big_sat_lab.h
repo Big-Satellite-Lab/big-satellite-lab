@@ -19,6 +19,8 @@ public:
 	// New functions
 	void updateCamera(VulkanEngine& engine);
 
+	void updateCameraOrbit(VulkanEngine& engine);
+
 	void lookatSatellite(VulkanEngine& engine);
 
 private:
@@ -27,6 +29,10 @@ private:
 	float _camRotPhi{};
 	float _camRotTheta{};
 	bool _camMouseControls{ false };
+
+	float _camOrbitPhi{};
+	float _camOrbitTheta{};
+	float _camOrbitRadius{ 10.0f };
 
 	// elapsed seconds since program start
 	float _time{};
